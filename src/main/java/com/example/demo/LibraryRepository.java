@@ -44,15 +44,40 @@ public class LibraryRepository {
         List<ReaderArchive> resArchives = query.list();
         return resArchives;
 	}
-	public List<Catalog> findBookByCriteria(String term, String criteria) {
+	
+	public List<Catalog> findBookByAuthor(String author) {
 		Session session = sessionFactory.getCurrentSession();
-		String hql = "FROM Catalog WHERE :criteria LIKE :term";
+		String hql = "FROM Catalog WHERE author LIKE :_author";
         Query<Catalog> query = session.createQuery(hql, Catalog.class);
-        query.setParameter("criteria", criteria);
-        query.setParameter("term", "%" + term + "%");
+        query.setParameter("_author", "%" + author + "%");
         List<Catalog> resArchives = query.list();
+        /*List<Catalog> res = new ArrayList<Catalog>();
+        for (Catalog catalog : resArchives) {
+			if(getBookCountByLibraryCode(catalog.getLibraryCode()) != 0) {
+				res.add(catalog);	
+			}
+		}*/
         return resArchives;
 	}
+	
+	public List<Catalog> findBookByTitle(String title) {
+		Session session = sessionFactory.getCurrentSession();
+		String hql = "FROM Catalog WHERE title LIKE :_title";
+        Query<Catalog> query = session.createQuery(hql, Catalog.class);
+        query.setParameter("_title", "%" + title + "%");
+        List<Catalog> resArchives = query.list();
+        /*List<Catalog> res = new ArrayList<Catalog>();
+        for (Catalog catalog : resArchives) {
+			if(getBookCountByLibraryCode(catalog.getLibraryCode()) != 0) {
+				res.add(catalog);	
+			}
+		}*/
+        return resArchives;
+	}
+	
+	
+	
+	
 	
 	public Catalog findBookByCode(int libraryCode) {
 		Session session = sessionFactory.getCurrentSession();
@@ -88,10 +113,10 @@ public class LibraryRepository {
 	public int getBookCountByLibraryCode(int libraryCode) {
 	    Session session = sessionFactory.getCurrentSession();
 	    String hql = "SELECT COUNT(b) FROM BookFund b WHERE b.catalog.libraryCode = :libraryCode AND b.status = 'yes'";
-	    Query<Integer> query = session.createQuery(hql, Integer.class);
+	    Query<Long> query = session.createQuery(hql, Long.class);
 	    query.setParameter("libraryCode", libraryCode);
-	    int bookCount = query.getSingleResult();
-	    return bookCount;
+	    Long bookCount = query.getSingleResult();
+	    return bookCount.intValue();
 	}
 	
 	public void addReader(String fullName, String address, String phoneNumber, String activityType) {
@@ -111,7 +136,7 @@ public class LibraryRepository {
 	    Session session = sessionFactory.getCurrentSession();	    
 	    Catalog catalog = new Catalog(author, title, publisher, year, type, numberOfPages, theme, price);
 	    for (int i = 0; i < quantity; i++) {
-	        BookFund bookFund = new BookFund(catalog, "Available");
+	        BookFund bookFund = new BookFund(catalog, "yes");
 	        session.save(bookFund);
 	    }    
 	    session.save(catalog);
@@ -119,14 +144,12 @@ public class LibraryRepository {
 	
 	
 	public int getBookNumberByLibraryCode(int libraryCode) {
-	    Session session = sessionFactory.getCurrentSession();
-	    
+	    Session session = sessionFactory.getCurrentSession();	    
 	    String hql = "SELECT b.inventoryNumber FROM BookFund b WHERE b.catalog.libraryCode = :libraryCode AND b.status = 'yes'";
 	    Query<Integer> query = session.createQuery(hql, Integer.class);
 	    query.setParameter("libraryCode", libraryCode);
 	    query.setMaxResults(1); 
 	    List<Integer> inventoryNumbers = query.getResultList();
-	    
 	    if (!inventoryNumbers.isEmpty()) {
 	        return inventoryNumbers.get(0);
 	    }
@@ -139,8 +162,7 @@ public class LibraryRepository {
 	    BookFund bookFund = session.get(BookFund.class, i);
 	    ReaderArchive readerArchive = session.get(ReaderArchive.class, readerCardNumber);
 	    if (bookFund != null && readerArchive != null) {
-	        BookLendingJournal bookLendingJournal = new BookLendingJournal(
-	        		(long) i,
+	        BookLendingJournal bookLendingJournal = new BookLendingJournal(i,
 	        		readerArchive,
 	        		lendingDate);
 	        session.save(bookLendingJournal);
@@ -148,7 +170,7 @@ public class LibraryRepository {
 	        session.update(bookFund);
 	        LendingPlans lendingPlan = new LendingPlans();
 	        LendingPlanId lendingPlanId = new LendingPlanId();
-	        lendingPlanId.setInventoryNumber((long) i);
+	        lendingPlanId.setInventoryNumber(i);
 	        lendingPlan.setId(lendingPlanId);
 	        lendingPlan.setBookLendingJournal(bookLendingJournal);
 	        lendingPlan.setPlannedReturnDate(returnDate);
@@ -156,7 +178,7 @@ public class LibraryRepository {
 	    }
 	}
 	
-	public void returnBook(Long inventoryNumber) {
+	public void returnBook(Integer inventoryNumber) {
 	    Session session = sessionFactory.getCurrentSession();
 	    BookFund bookFund = session.get(BookFund.class, inventoryNumber);
 	    if (bookFund != null && bookFund.getStatus().equals("Lent")) {
@@ -181,6 +203,14 @@ public class LibraryRepository {
 	    }    
 	    session.save(catalog);
 		
+	}
+	public void addCopies(Integer count, Integer code) {
+		Session session = sessionFactory.getCurrentSession();	
+		Catalog catalog = session.find(Catalog.class, code);
+		for (int i = 0; i < count; i++) {
+			BookFund bookFund = new BookFund(catalog, "yes");
+	        session.save(bookFund);	
+		}		
 	}
 }
 

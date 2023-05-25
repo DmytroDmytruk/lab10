@@ -19,7 +19,7 @@ public class BookLendingJournal {
 
     @Id
     @Column(name = "inventory_number")
-    private Long inventoryNumber;
+    private Integer inventoryNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reader_card_number")
@@ -28,11 +28,11 @@ public class BookLendingJournal {
     @Column(name = "lending_date")
     private Date lendingDate;
 
-	public Long getInventoryNumber() {
+	public Integer getInventoryNumber() {
 		return inventoryNumber;
 	}
 
-	public void setInventoryNumber(Long inventoryNumber) {
+	public void setInventoryNumber(Integer inventoryNumber) {
 		this.inventoryNumber = inventoryNumber;
 	}
 
@@ -52,7 +52,7 @@ public class BookLendingJournal {
 		this.lendingDate = lendingDate;
 	}
 
-	public BookLendingJournal(Long inventoryNumber, ReaderArchive readerArchive, Date lendingDate) {
+	public BookLendingJournal(Integer inventoryNumber, ReaderArchive readerArchive, Date lendingDate) {
 		super();
 		this.inventoryNumber = inventoryNumber;
 		this.readerArchive = readerArchive;

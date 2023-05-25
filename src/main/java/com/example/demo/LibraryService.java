@@ -29,9 +29,14 @@ public class LibraryService {
 	public List<Book> searchBook(String criteria, String term, int min, int max) {
 		if(criteria.equals("price")) {
 			return catalogToBook(repository.findBookByPrice(min, max));
-		} else {
-			return catalogToBook(repository.findBookByCriteria(term, criteria));
-		}		
+		} 
+		if(criteria.equals("author")) {
+			return catalogToBook(repository.findBookByAuthor(term));
+		}
+		if(criteria.equals("title")) {
+			return catalogToBook(repository.findBookByTitle(term));
+		}
+		return null;
 	}
 	
 	private List<User> readerToUser(List<ReaderArchive> readers){
@@ -71,8 +76,10 @@ public class LibraryService {
 		return dto;
 	}
 
-	public void registerLending(int userId, int code, Date dateOfReturn, Date date) {
-		repository.lendBook(date, dateOfReturn, userId, repository.getBookNumberByLibraryCode(code));	
+	public int registerLending(int userId, int code, Date dateOfReturn, Date date) {
+		int inventoryNumber = repository.getBookNumberByLibraryCode(code);
+		repository.lendBook(date, dateOfReturn, userId, inventoryNumber);
+		return inventoryNumber;
 	}
 
 
@@ -87,6 +94,12 @@ public class LibraryService {
 
 	public void addBook(Book book) {
 		repository.addBook(book);
+		
+	}
+
+
+	public void addCopies(Integer count, Integer code) {
+		repository.addCopies(count, code);
 		
 	}	
 }

@@ -24,7 +24,6 @@
         <br>
         <label for="price_to">Ціна до:</label>
         <input type="text" id="price_to" name="priceTo">
-        <input type="hidden" name="userId" th:value="${user_id}">
         <br>
     </div>
     <input type="submit" value="Пошук">
@@ -35,7 +34,6 @@
         <th>Назва</th>
         <th>Автор</th>
         <th>Ціна</th>
-        <th>Кількість</th>
         <th>Дії</th>
     </tr>
     </thead>
@@ -45,16 +43,13 @@
         <td th:text="${book.author}"></td>
         <td th:text="${book.price} + ' грн.'">150</td>
         <td>
-            <div class="quantity-container">
-                <button class="quantity-button" type="button" onclick="decrementQuantity(this)">-</button>
-                <input class="quantity-input" type="number" name="quantity" value="1" min="1">
-                <button class="quantity-button" type="button" onclick="incrementQuantity(this)">+</button>
-            </div>
-        </td>
-        <td>
-            <form th:action="@{/lend/confirm}" method="post">
+            <form th:action="@{/addbook/add}" method="post">
+                <div class="quantity-container">
+                	<button class="quantity-button" type="button" onclick="decrementQuantity(this)">-</button>
+                	<input class="quantity-input" type="number" name="quantity" value="0" min="0">
+                	<button class="quantity-button" type="button" onclick="incrementQuantity(this)">+</button>
+            	</div>
                 <input type="hidden" name="libraryCode" th:value="${book.libraryCode}">
-                <input type="hidden" name="userId" th:value="${user_id}">
                 <button type="submit">Прийняти</button>
             </form>
         </td>
@@ -64,28 +59,35 @@
 <script>
     const searchCriteriaSelect = document.getElementById('search_criteria');
     const priceRangeDiv = document.querySelector('.price-range');
-
-    searchCriteriaSelect.addEventListener('change', function() {
-        if (this.value === 'price') {
-            priceRangeDiv.style.display = 'block';
-        } else {
-            priceRangeDiv.style.display = 'none';
-        }
-    });
-
-    function incrementQuantity(button) {
-        const input = button.previousElementSibling;
-        const currentValue = parseInt(input.value);
-        input.value = currentValue + 1;
+searchCriteriaSelect.addEventListener('change', function() {
+    if (this.value === 'price') {
+        priceRangeDiv.style.display = 'block';
+    } else {
+        priceRangeDiv.style.display = 'none';
     }
+});
 
-    function decrementQuantity(button) {
-        const input = button.nextElementSibling;
-        const currentValue = parseInt(input.value);
-        if (currentValue > 1) {
-            input.value = currentValue - 1;
-        }
+function incrementQuantity(button) {
+    const input = button.previousElementSibling;
+    const currentValue = parseInt(input.value);
+    input.value = currentValue + 1;
+    updateQuantityInput(button);
+}
+
+function decrementQuantity(button) {
+    const input = button.nextElementSibling;
+    const currentValue = parseInt(input.value);
+    if (currentValue > 0) {
+        input.value = currentValue - 1;
+        updateQuantityInput(button);
     }
+}
+
+function updateQuantityInput(button) {
+    const quantityInput = button.parentNode.querySelector('.quantity-input');
+    const bookQuantityInput = button.parentNode.parentNode.querySelector('.book-quantity-input');
+    bookQuantityInput.value = quantityInput.value;
+}
 </script>
 </body>
 </html>

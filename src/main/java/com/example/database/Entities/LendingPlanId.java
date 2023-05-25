@@ -9,13 +9,13 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class LendingPlanId implements Serializable {
     @Column(name = "inventory_number")
-    private Long inventoryNumber;
+    private Integer inventoryNumber;
 
-	public Long getInventoryNumber() {
+	public Integer getInventoryNumber() {
 		return inventoryNumber;
 	}
 
-	public void setInventoryNumber(Long inventoryNumber) {
+	public void setInventoryNumber(Integer inventoryNumber) {
 		this.inventoryNumber = inventoryNumber;
 	}
     

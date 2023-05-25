@@ -94,7 +94,6 @@ public class LibraryController {
 	public String lend(@RequestParam("userId")Integer userId, Model model) {	
         model.addAttribute("user_id", userId);
 		return "bookSearchResults";
-		
 	}
 	@GetMapping("/searchuser")
     public String searchUsers(@RequestParam("searchCriteria") String criteria,
@@ -113,14 +112,14 @@ public class LibraryController {
 	@PostMapping("/lend/success")
 	public String success(@RequestParam("date")String dateOfReturn, @RequestParam("libraryCode")int code
 			,@RequestParam("userId")int userId, Model model) {
-		int i = 5;
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			Date date = dateFormat.parse(dateOfReturn);
-			service.registerLending(userId, code, date, new Date());
+			int libraryCode = service.registerLending(userId, code, date, new Date());
+			model.addAttribute("bookCode", libraryCode);
 		} catch (ParseException e) {
 			e.printStackTrace();
-		}
+		}	
 		return "success";
 		
 	}
@@ -138,27 +137,29 @@ public class LibraryController {
 	}
 	
 	@GetMapping("/searchbooktoadd")
-    public String searchBookstoadd(@RequestParam("searchCriteria") String criteria,
-                              @RequestParam("searchTerm") String term,
+    public String searchBookstoadd(@RequestParam(value = "searchCriteria", required = false) String criteria,
+    		 					@RequestParam(value = "searchTerm", required = false) String term,
                               @RequestParam(value = "priceFrom", required = false) Integer fromPrice,
                               @RequestParam(value = "priceTo", required = false) Integer toPrice,
-                              @RequestParam(value = "userId", required = false) Integer userId,
                               Model model) {
-
-        List<Book> books = new ArrayList<Book>();
-        books.add(new Book(1, "glossary", "mlkffffe", 4, 5)); 
-        books.add(new Book(2, "glossary", "qwme", 4, 7)); 
-        books.add(new Book(3, "ddd", "me", 2, 1)); 
-        books.add(new Book(4, "gdddlossary", "mwfe", 1, 3)); 
-        model.addAttribute("user_id", userId);
+		fromPrice = fromPrice != null ? fromPrice : 0;
+		toPrice = toPrice != null ? toPrice : 0;
+		List<Book> books = service.searchBook(criteria, term, fromPrice, toPrice);
         model.addAttribute("books", books);
         return "addbook";
     }
 	
+	@PostMapping("/addbook/add")
+	public String addCopy(@RequestParam("quantity") Integer count,
+            @RequestParam("libraryCode") Integer code) {
+		service.addCopies(count, code);
+				return "redirect:/addbook";
+		
+	}
 	
 	@GetMapping("/searchbook")
-    public String searchBooks(@RequestParam("searchCriteria") String criteria,
-                              @RequestParam("searchTerm") String term,
+    public String searchBooks(@RequestParam(value = "searchCriteria", required = false) String criteria,
+                              @RequestParam(value = "searchTerm", required = false) String term,
                               @RequestParam(value = "priceFrom", required = false) Integer fromPrice,
                               @RequestParam(value = "priceTo", required = false) Integer toPrice,
                               @RequestParam(value = "userId", required = false) Integer userId,
