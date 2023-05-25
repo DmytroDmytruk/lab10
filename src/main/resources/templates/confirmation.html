@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Підтвердження позичання</title>
+    <link rel="stylesheet" type="text/css" href="/confirmstyle.css">
+    <link rel="stylesheet" type="text/css" href="/searchstyle.css">
+</head>
+<body>
+<div th:replace="header.html"></div>
+    <h1>Підтвердження позичання</h1>
+    <p>Назва: <span th:text="${title}"></span></p>
+    <p>Автор: <span th:text="${author}"></span></p>
+    <p>Ім'я: <span th:text="${name}"></span></p>
+    <p>Прізвище: <span th:text="${surname}"></span></p>
+    <p>Дата: <span th:text="${cdate}"></span></p>
+    <label for="date">Дата повернення:</label>
+    
+    <form th:action="@{/lend/success}" method="post">
+    <input type="date" id="date" name="date" required><br><br>
+       <input type="hidden" name="libraryCode" th:value="${libraryCode}">
+       <input type="hidden" name="userId" th:value="${userId}"> 
+       <button type="submit">Прийняти</button>
+    </form>
+</body>
+</html>

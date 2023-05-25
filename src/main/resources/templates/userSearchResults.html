@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Пошук користувачів</title>
+    <link rel="stylesheet" type="text/css" href="searchstyle.css">
+</head>
+<body>
+<div th:replace="header.html"></div>
+<h1>Пошук користувачів</h1>
+<form th:action="@{/searchuser}" method="get">
+    <label for="search_criteria">Критерій пошуку:</label>
+    <select id="search_criteria" name="searchCriteria">
+        <option value="name">Ім'я</option>
+        <option value="phoneNumber">Номер телефону</option>
+    </select>
+    <br>
+    <label for="search_term">Пошуковий термін:</label>
+    <input type="text" id="search_term" name="searchTerm">
+    <br>
+    <input type="submit" value="Пошук">
+</form>
+<table>
+    <thead>
+    <tr>
+        <th>Прізвище</th>
+        <th>Ім'я</th>
+        <th>Місто</th>
+        <th>Телефон</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.surname}"></td>
+        <td th:text="${user.adress}"></td>
+        <td th:text="${user.phone}"></td>
+        <td>
+            <form th:action="@{/lend}" method="post">
+                <input type="hidden" name="userId" th:value="${user.id}">
+                <button type="submit">Позичити</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+/*    const searchCriteriaSelect = document.getElementById('search_criteria');
+    const priceRangeDiv = document.querySelector('.price-range');
+
+    searchCriteriaSelect.addEventListener('change', function() {
+        if (this.value === 'price') {
+            priceRangeDiv.style.display = 'block';
+        } else {
+            priceRangeDiv.style.display = 'none';
+        }
+    });*/
+</script>
+</body>
+</html>

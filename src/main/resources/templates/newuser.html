@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Додати нового користувача</title>
+    <link rel="stylesheet" type="text/css" href="/NewUserStyle.css">
+</head>
+<body>
+<div th:replace="header.html"></div>
+    <h1>Додати нового користувача</h1>
+    <form action="/saveUser" method="post">
+        <label for="Name">Ім'я:</label>
+        <input type="text" id="Name" name="name" required><br><br>
+        
+        <label for="address">Місто:</label>
+        <input type="text" id="address" name="city" required><br><br>
+        
+        <label for="address">Вулиця:</label>
+        <input type="text" id="address" name="street" required><br><br>
+        
+        <label for="address">Номер дому:</label>
+        <input type="text" id="address" name="house" required><br><br>
+        
+        <label for="phoneNumber">Номер телефону:</label>
+        <input type="text" id="phoneNumber" name="phoneNumber" required><br><br>
+        
+        <label for="profession">Професія:</label>
+        <input type="text" id="profession" name="profession" required><br><br>
+        
+        <input type="submit" value="Додати користувача">
+    </form>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Пошук книг</title>
+    <link rel="stylesheet" type="text/css" href="searchstyle.css">
+</head>
+<body>
+<div th:replace="header.html"></div>
+<h1>Пошук книг</h1>
+<form th:action="@{/searchbook}" method="get">
+    <label for="search_criteria">Критерій пошуку:</label>
+    <select id="search_criteria" name="searchCriteria">
+        <option value="title">Назва</option>
+        <option value="author">Автор</option>
+        <option value="price">Ціна</option>
+    </select>
+    <br>
+    <label for="search_term">Пошуковий термін:</label>
+    <input type="text" id="search_term" name="searchTerm">
+    <br>
+    <div class="price-range">
+        <label for="price_from">Ціна від:</label>
+        <input type="text" id="price_from" name="priceFrom">
+        <br>
+        <label for="price_to">Ціна до:</label>
+        <input type="text" id="price_to" name="priceTo">
+        <input type="hidden" name="userId" th:value="${user_id}">
+        <br>
+    </div>
+    <input type="submit" value="Пошук">
+</form>
+<table>
+    <thead>
+    <tr>
+        <th>Назва</th>
+        <th>Автор</th>
+        <th>Ціна</th>
+        <th>Дії</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.title}"></td>
+        <td th:text="${book.author}"></td>
+        <td th:text="${book.price} + ' грн.'">150</td>
+        <td th:text="${book.count}"></td>
+        <td>
+            <form th:action="@{/lend/confirm}" method="post">
+                <input type="hidden" name="libraryCode" th:value="${book.libraryCode}">
+                <input type="hidden" name="userId" th:value="${user_id}">
+                <button type="submit">Прийняти</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    const searchCriteriaSelect = document.getElementById('search_criteria');
+    const priceRangeDiv = document.querySelector('.price-range');
+
+    searchCriteriaSelect.addEventListener('change', function() {
+        if (this.value === 'price') {
+            priceRangeDiv.style.display = 'block';
+        } else {
+            priceRangeDiv.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
